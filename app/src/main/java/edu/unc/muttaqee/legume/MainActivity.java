@@ -151,44 +151,41 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private class AsyncPlotPointPairs extends AsyncTask<String, Void, String> {
-        final int NUM_POINTS = 100;
-        double x, y, z;
-        Acceleration accel_0 = null, accel_1 = null;
-        int delta_t = 50; // Milliseconds
-
-        @Override
-        protected double[] doInBackground(String... params) {
-            int i = 0;
-            while (i < NUM_POINTS) {
-                bean.readAcceleration(new Callback<Acceleration>() {
-                    @Override
-                    public void onResult(Acceleration result) {
-                        accel_0 = result;
-                    }
-                });
-                try {
-                    Thread.sleep(delta_t);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                bean.readAcceleration(new Callback<Acceleration>() {
-                    @Override
-                    public void onResult(Acceleration result) {
-                        accel_1 = result;
-                    }
-                });
-                i++;
-            }
-            x = (accel_1.x() * delta_t + 0) * delta_t;
-            y = (accel_1.y() * delta_t + 0) * delta_t;
-            z = (accel_1.z() * delta_t + 0) * delta_t;
-            return new double[] {x, y, z};
-        }
-
-        @Override
-        protected void onPostExecute()
-    }
+//    private class AsyncPlotPointPairs extends AsyncTask<String, Void, String> {
+//        final int NUM_POINTS = 100;
+//        double x, y, z;
+//        Acceleration accel_0 = null, accel_1 = null;
+//        int delta_t = 50; // Milliseconds
+//
+//        @Override
+//        protected double[] doInBackground(String... params) {
+//            int i = 0;
+//            while (i < NUM_POINTS) {
+//                bean.readAcceleration(new Callback<Acceleration>() {
+//                    @Override
+//                    public void onResult(Acceleration result) {
+//                        accel_0 = result;
+//                    }
+//                });
+//                try {
+//                    Thread.sleep(delta_t);
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//                bean.readAcceleration(new Callback<Acceleration>() {
+//                    @Override
+//                    public void onResult(Acceleration result) {
+//                        accel_1 = result;
+//                    }
+//                });
+//                i++;
+//            }
+//            x = (accel_1.x() * delta_t + 0) * delta_t;
+//            y = (accel_1.y() * delta_t + 0) * delta_t;
+//            z = (accel_1.z() * delta_t + 0) * delta_t;
+//            return new double[] {x, y, z};
+//        }
+//    }
 
     private class AsyncPlotPoints extends AsyncTask<String, Void, String> {
         boolean loop = true;
@@ -213,6 +210,8 @@ public class MainActivity extends AppCompatActivity {
                         x = result.x();
                         y = result.y();
                         z = result.z();
+
+
 
                         Log.v("LOG-NOTE", t + "ms - " + x + ", " + y + ", " + z);
 

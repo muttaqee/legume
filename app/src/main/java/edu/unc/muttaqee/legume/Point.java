@@ -2,6 +2,8 @@ package edu.unc.muttaqee.legume;
 
 public class Point {
 
+    public static double vmax = 0.1, vmin = -0.1;
+
     long timeStamp;
 
     // Physical values
@@ -25,6 +27,23 @@ public class Point {
             this.vx = ax * delta_t + prev.vx;
             this.vy = ay * delta_t + prev.vy;
             this.vz = az * delta_t + prev.vz;
+
+            // Bound velocity values
+            if (this.vx > this.vmax) {
+                this.vx = this.vmax;
+            } else if (this.vx < this.vmin) {
+                this.vx = this.vmin;
+            }
+            if (this.vy > this.vmax) {
+                this.vy = this.vmax;
+            } else if (this.vy < this.vmin) {
+                this.vy = this.vmin;
+            }
+            if (this.vz > this.vmax) {
+                this.vz = this.vmax;
+            } else if (this.vz < this.vmin) {
+                this.vz = this.vmin;
+            }
 
             this.px = this.vx * delta_t + prev.px;
             this.py = this.vy * delta_t + prev.py;
