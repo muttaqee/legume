@@ -9,40 +9,78 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="edu.unc.muttaqee.legume.MainActivity">
 
-    <LinearLayout
-        android:orientation="vertical"
+    <TabHost
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:weightSum="7">
-
-        <edu.unc.muttaqee.legume.LegumeView
-            android:id="@+id/canvas"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="6"/>
+        android:id="@+id/tabHost">
 
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:weightSum="2">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Start"
-                android:id="@+id/startButton"
-                android:onClick="startMovement"
-                android:layout_weight="1"/>
+            <TabWidget
+                android:id="@android:id/tabs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"></TabWidget>
 
-            <Button
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="Stop"
-                android:id="@+id/stopButton"
-                android:onClick="stopMovement"
-                android:layout_weight="1"/>
+            <FrameLayout
+                android:id="@android:id/tabcontent"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:id="@+id/About"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Hi"
+                        android:id="@+id/textView" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/Game"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:weightSum="7">
+
+                    <edu.unc.muttaqee.legume.LegumeView
+                        android:id="@+id/canvas"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="6"/>
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1"
+                        android:weightSum="2">
+
+                        <Button
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="Start"
+                            android:id="@+id/startButton"
+                            android:onClick="startMovement"
+                            android:layout_weight="1"/>
+
+                        <Button
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:text="Stop"
+                            android:id="@+id/stopButton"
+                            android:onClick="stopMovement"
+                            android:layout_weight="1"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+            </FrameLayout>
         </LinearLayout>
-    </LinearLayout>
+    </TabHost>
 </RelativeLayout>
