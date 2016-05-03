@@ -6,6 +6,9 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TabHost;
 import android.widget.Toast;
 
 import com.punchthrough.bean.sdk.Bean;
@@ -22,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
     Bitmap bitmap;
     Canvas canvas;
     static LegumeView lv;
+    boolean running = false;
+    Button start, stop;
 
     Bean bean;
 
@@ -39,6 +44,29 @@ public class MainActivity extends AppCompatActivity {
         BeanManager.getInstance().startDiscovery(bdl);
 
         //lv.invalidate(); // FIXME - put in another thread / asynctask
+
+        start = (Button) findViewById(R.id.startButton);
+        start.setEnabled(false);
+
+        stop = (Button) findViewById(R.id.stopButton);
+        stop.setEnabled(false);
+
+
+        TabHost host = (TabHost)findViewById(R.id.tabHost);
+        host.setup();
+
+        //Tab 1
+        TabHost.TabSpec spec = host.newTabSpec("About");
+        spec.setContent(R.id.About);
+        spec.setIndicator("About");
+        host.addTab(spec);
+
+        //Tab 2
+        spec = host.newTabSpec("Game");
+        spec.setContent(R.id.Game);
+        spec.setIndicator("Game");
+        host.addTab(spec);
+
     }
 
     public static int getLegumeViewWidth() {
@@ -70,8 +98,9 @@ public class MainActivity extends AppCompatActivity {
 
             Toast toast = Toast.makeText(getApplicationContext(), "Connected!", Toast.LENGTH_SHORT);
             toast.show();
+            start.setEnabled(true);
 
-            new AsyncPlotPoints().execute();
+            //new AsyncPlotPoints().execute();
 
 //            // TODO - DON'T NEED THIS FIRST READING; JUST FOR SHOW
 //            bean.readAcceleration(new Callback<Acceleration>() {
@@ -187,6 +216,42 @@ public class MainActivity extends AppCompatActivity {
 //        }
 //    }
 
+    /*private class AsyncPlotPointPairs extends AsyncTask<String, Void, String> {
+        final int NUM_POINTS = 100;
+        double x, y, z;
+        Acceleration accel_0 = null, accel_1 = null;
+        int delta_t = 50; // Milliseconds
+
+        @Override
+        protected double[] doInBackground(String... params) {
+            int i = 0;
+            while (i < NUM_POINTS) {
+                bean.readAcceleration(new Callback<Acceleration>() {
+                    @Override
+                    public void onResult(Acceleration result) {
+                        accel_0 = result;
+                    }
+                });
+                try {
+                    Thread.sleep(delta_t);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                bean.readAcceleration(new Callback<Acceleration>() {
+                    @Override
+                    public void onResult(Acceleration result) {
+                        accel_1 = result;
+                    }
+                });
+                i++;
+            }
+            x = (accel_1.x() * delta_t + 0) * delta_t;
+            y = (accel_1.y() * delta_t + 0) * delta_t;
+            z = (accel_1.z() * delta_t + 0) * delta_t;
+            return new double[] {x, y, z};
+        }
+    }*/
+
     private class AsyncPlotPoints extends AsyncTask<String, Void, String> {
         boolean loop = true;
         Point prev = null;
@@ -201,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
             max_y = min_y = 0.0;
             max_z = min_z = 0.0;
 
-            while (i < 300) {
+            while (running) {
                 bean.readAcceleration(new Callback<Acceleration>() {
                     @Override
                     public void onResult(Acceleration result) {
@@ -311,5 +376,19 @@ public class MainActivity extends AppCompatActivity {
 
     // TODO - Click event listener to handle button clicks
 
+    public void startMovement(View v) {
+        running = true;
+        new AsyncPlotPoints().execute();
+        start.setEnabled(false);
+        stop.setEnabled(true);
+    }
+
+    public void stopMovement(View v) {
+        running = false;
+        start.setEnabled(true);
+        stop.setEnabled(false);
+        lv.points.clear();
+        lv.invalidate();
+    }
 
 }
