@@ -2,7 +2,7 @@ package edu.unc.muttaqee.legume;
 
 public class Point {
 
-    public static double vmax = 0.1, vmin = -0.1;
+    public static double vmax = 0.15, vmin = -0.15;
 
     long timeStamp;
 

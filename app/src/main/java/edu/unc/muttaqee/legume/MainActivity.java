@@ -37,8 +37,6 @@ public class MainActivity extends AppCompatActivity {
         lv = (LegumeView) findViewById(R.id.canvas);
 
         BeanManager.getInstance().startDiscovery(bdl);
-
-        //lv.invalidate(); // FIXME - put in another thread / asynctask
     }
 
     public static int getLegumeViewWidth() {
@@ -276,17 +274,24 @@ public class MainActivity extends AppCompatActivity {
                         prev = p;
 
                         // TODO THINGY
-                        if (prev.px > 0.5 || prev.px < -0.5) {
-                            prev.px = 0.0;
+                        if (prev.px > 0.5) {
+                            prev.px = 0.5;
+                        } else if (prev.px < -0.5) {
+                            prev.px = -0.5;
                         }
-                        if (prev.py > 0.5 || prev.py < -0.5) {
-                            prev.py = 0.0;
+                        if (prev.py > 0.5) {
+                            prev.py = 0.5;
+                        } else if (prev.py < -0.5) {
+                            prev.py = -0.5;
                         }
-                        if (prev.pz > 0.5 || prev.pz < -0.5) {
-                            prev.pz = 0.0;
+                        if (prev.pz > 0.5) {
+                            prev.pz = 0.5;
+                        } else if (prev.pz < -0.5) {
+                            prev.pz = -0.5;
                         }
 
-                        if (lv.points.size() > 1) {
+                        // TAIL
+                        if (lv.points.size() > 10) {
                             lv.points.remove(0);
                         }
 
