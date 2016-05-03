@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -46,9 +47,10 @@ public class LegumeView extends View {
         double percent;
         for (Point p : points) {
             percent = (double) Math.abs(p.cz) / MainActivity.getLegumeViewWidth();
-            int val = (int) (percent * 255);
+            Log.v("LOG-PERCENT", p.cz + ", " + percent);
+            int val = (int) (255 * percent);
             paint.setColor(Color.rgb(val, 255, val));
-            canvas.drawCircle(MainActivity.getLegumeViewWidth()-p.cx, MainActivity.getLegumeViewWidth()-p.cy, p.cz / 5, paint);
+            canvas.drawCircle(p.cx, p.cy, 50 /* p.cz / 4 */, paint);
         }
     }
 }

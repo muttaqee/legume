@@ -118,13 +118,92 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+    // Determine how to offset accelerometer readings
+    private class AsyncCalibrate extends AsyncTask<String, Void, String> {
+        double avgx = 0, avgy = 0, avgz = 0;
+        @Override
+        protected String doInBackground(String... params) {
+            final int TIMES_TO_SAMPLE = 30;
+            // Put bean on a flat surface // TODO NOTIFICATION
+            // Sum accelerometer values
+            try {
+                Thread.sleep(2000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            int i = 0;
+            while (i < TIMES_TO_SAMPLE) {
+                bean.readAcceleration(new Callback<Acceleration>() {
+                    @Override
+                    public void onResult(Acceleration result) {
+                        avgx += result.x();
+                        avgy += result.y();
+                        avgz += result.z();
+                    }
+                });
+                i++;
+            }
+            // Compute average of accelerometer values
+            avgx /= TIMES_TO_SAMPLE;
+            avgy /= TIMES_TO_SAMPLE;
+            avgz /= TIMES_TO_SAMPLE;
+            return null;
+        }
+    }
+
+    private class AsyncPlotPointPairs extends AsyncTask<String, Void, String> {
+        final int NUM_POINTS = 100;
+        double x, y, z;
+        Acceleration accel_0 = null, accel_1 = null;
+        int delta_t = 50; // Milliseconds
+
+        @Override
+        protected double[] doInBackground(String... params) {
+            int i = 0;
+            while (i < NUM_POINTS) {
+                bean.readAcceleration(new Callback<Acceleration>() {
+                    @Override
+                    public void onResult(Acceleration result) {
+                        accel_0 = result;
+                    }
+                });
+                try {
+                    Thread.sleep(delta_t);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                bean.readAcceleration(new Callback<Acceleration>() {
+                    @Override
+                    public void onResult(Acceleration result) {
+                        accel_1 = result;
+                    }
+                });
+                i++;
+            }
+            x = (accel_1.x() * delta_t + 0) * delta_t;
+            y = (accel_1.y() * delta_t + 0) * delta_t;
+            z = (accel_1.z() * delta_t + 0) * delta_t;
+            return new double[] {x, y, z};
+        }
+
+        @Override
+        protected void onPostExecute()
+    }
+
     private class AsyncPlotPoints extends AsyncTask<String, Void, String> {
         boolean loop = true;
         Point prev = null;
 
+        double max_x, min_x, max_y, min_y, max_z, min_z;
+
         @Override
         protected String doInBackground(String... params) {
             int i = 0;
+
+            max_x = min_x = 0.0;
+            max_y = min_y = 0.0;
+            max_z = min_z = 0.0;
+
             while (i < 300) {
                 bean.readAcceleration(new Callback<Acceleration>() {
                     @Override
@@ -134,7 +213,65 @@ public class MainActivity extends AppCompatActivity {
                         x = result.x();
                         y = result.y();
                         z = result.z();
+
                         Log.v("LOG-NOTE", t + "ms - " + x + ", " + y + ", " + z);
+
+                        if (x > max_x) {
+                            max_x = x;
+                        }
+                        if (x < min_x) {
+                            min_x = x;
+                        }
+                        if (y > max_y) {
+                            max_y = y;
+                        }
+                        if (y < min_y) {
+                            min_y = y;
+                        }
+                        if (z > max_z) {
+                            max_z = z;
+                        }
+                        if (z < min_z) {
+                            min_z = z;
+                        }
+
+//                        // Report max
+//                        String report = "";
+//                        if (Math.abs(x) > Math.abs(y)) {
+//                            if (Math.abs(x) > Math.abs(z)) {
+//                                report = "X IS MAX";
+//                                if (x > 0) {
+//                                    report += "-positive";
+//                                } else {
+//                                    report += "-negative";
+//                                }
+//                            } else {
+//                                report = "Z IS MAX";
+//                                if (z > 0) {
+//                                    report += "-positive";
+//                                } else {
+//                                    report += "-negative";
+//                                }
+//                            }
+//                        } else {
+//                            if (Math.abs(y) > Math.abs(z)) {
+//                                report = "Y IS MAX";
+//                                if (y > 0) {
+//                                    report += "-positive";
+//                                } else {
+//                                    report += "-negative";
+//                                }
+//                            } else {
+//                                report = "Z IS MAX";
+//                                if (z > 0) {
+//                                    report += "-positive";
+//                                } else {
+//                                    report += "-negative";
+//                                }
+//                            }
+//                        }
+//                        Log.v("LOG-NOTE", report);
+
                         Point p = new Point(t, x, y, z, prev);
                         lv.points.add(p);
                         prev = p;
@@ -146,11 +283,11 @@ public class MainActivity extends AppCompatActivity {
                         if (prev.py > 0.5 || prev.py < -0.5) {
                             prev.py = 0.0;
                         }
-                        if (prev.pz > 0.5 || prev.pz < 0.2) {
+                        if (prev.pz > 0.5 || prev.pz < -0.5) {
                             prev.pz = 0.0;
                         }
 
-                        if (lv.points.size() > 5) {
+                        if (lv.points.size() > 1) {
                             lv.points.remove(0);
                         }
 
@@ -160,14 +297,17 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(150);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
                 i++;
             }
+
+            //FIXME remove
+            Log.v("LOG-NOTE", max_x + " " + min_x + " " + max_y + " " + min_y + " " + max_z + " " + min_z);
             return "Executed";
-        };
+        }
     }
 
     // TODO - Click event listener to handle button clicks
