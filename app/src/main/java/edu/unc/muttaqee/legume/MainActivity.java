@@ -427,11 +427,19 @@ public class MainActivity extends AppCompatActivity {
 
     // TODO - Click event listener to handle button clicks
 
-    //clear trace
+    //populate list of downloaded traces
+    public void populateTraceList(){
+        //TODO
+    }
+    //load a trace upon selection from TraceList
+    public void loadForPlayback(){
+        //TODO
+    }
+    //clear the trace "recording" (possibly unnecessary)
     public void clearTrace() {
         Arrays.fill(pointTrace, null);
     }
-    //send trace to server
+    //sends trace recording to server
     public void uploadTrace() {
         new PostTrace().execute();
     }
