@@ -50,8 +50,8 @@ public class LegumeView extends View {
             percent = (double) Math.abs(p.cz) / MainActivity.getLegumeViewWidth();
             Log.v("LOG-PERCENT", p.cz + ", " + percent);
             int vala = (int) (255 * percent);
-            int valb = (int) ((i/SIZE)*255);
-            paint.setColor(Color.rgb(valb, 255, valb));
+            int valb = (int) (1 - ((double)i/SIZE)*255);
+            paint.setColor(Color.rgb(valb, valb, 255));
             canvas.drawCircle(p.cx, p.cy, i * 5 + 50 /* p.cz / 4 */, paint);
         }
     }
