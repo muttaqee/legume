@@ -4,17 +4,17 @@ public class Point {
 
     public static double vmax = 0.15, vmin = -0.15;
 
-    long timeStamp;
+    private long timeStamp;
 
     // Physical values
-    double px, py, pz; // pz is weight on canvas
-    double vx, vy, vz;
+    private double px, py, pz; // pz is weight on canvas
+    private double vx, vy, vz;
 
     // Canvas values range [0, MainActivity.getLegumeViewWidth()]
-    int cx, cy, cz;
+    private int cx, cy, cz;
 
     // Last point
-    Point prev;
+    private Point prev;
 
     public Point(long t, double ax, double ay, double az, Point prev) {
         this.timeStamp = t;
@@ -51,9 +51,9 @@ public class Point {
 
         }
         // Map position values to canvas (x, y, z)
-        cx = this.getCanvasCoordFromPositionVal(px);
-        cy = this.getCanvasCoordFromPositionVal(py);
-        cz = this.getCanvasCoordFromPositionVal(pz);
+        this.cx = this.getCanvasCoordFromPositionVal(px);
+        this.cy = this.getCanvasCoordFromPositionVal(py);
+        this.cz = this.getCanvasCoordFromPositionVal(pz);
     }
 
     //Correct position - fix within [-0.5, 0.5] range
@@ -65,6 +65,44 @@ public class Point {
         } else {
             return p;
         }
+    }
+
+    public long getTimeStamp(){
+        return this.timeStamp;
+    }
+
+    public double getPx(){
+        return px;
+    }
+
+    public double getPy(){
+        return py;
+    }
+
+    public double getPz() {
+        return pz;
+    }
+
+    public int getCx(){
+        return cx;
+    }
+
+    public int getCy(){
+        return cy;
+    }
+
+    public int getCz() {
+        return cz;
+    }
+
+    public void setPx(double n){
+        px = n;
+    }
+    public void setPy(double n){
+        py = n;
+    }
+    public void setPz(double n){
+        pz = n;
     }
 
     public static int getCanvasCoordFromPositionVal(double p) {

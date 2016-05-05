@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.punchthrough.bean.sdk.Bean;
 import com.punchthrough.bean.sdk.BeanDiscoveryListener;
 import com.punchthrough.bean.sdk.BeanListener;
@@ -17,11 +18,26 @@ import com.punchthrough.bean.sdk.message.BeanError;
 import com.punchthrough.bean.sdk.message.Callback;
 import com.punchthrough.bean.sdk.message.ScratchBank;
 
+import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Arrays;
+
 public class MainActivity extends AppCompatActivity {
 
     Bitmap bitmap;
     Canvas canvas;
     static LegumeView lv;
+    int counter = 0;
+    Point pointTrace[] = new Point[1000];
+    Point traceArray[][] = new Point[80][1000];
 
     Bean bean;
 
@@ -193,13 +209,13 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected String doInBackground(String... params) {
-            int i = 0;
+            counter = 0;
 
             max_x = min_x = 0.0;
             max_y = min_y = 0.0;
             max_z = min_z = 0.0;
 
-            while (i < 300) {
+            while (counter < 300) {
                 bean.readAcceleration(new Callback<Acceleration>() {
                     @Override
                     public void onResult(Acceleration result) {
@@ -271,23 +287,24 @@ public class MainActivity extends AppCompatActivity {
 
                         Point p = new Point(t, x, y, z, prev);
                         lv.points.add(p);
+                        pointTrace[counter] = p;
                         prev = p;
 
                         // TODO THINGY
-                        if (prev.px > 0.5) {
-                            prev.px = 0.5;
-                        } else if (prev.px < -0.5) {
-                            prev.px = -0.5;
+                        if (prev.getPx() > 0.5) {
+                            prev.setPx(0.5);
+                        } else if (prev.getPx() < -0.5) {
+                            prev.setPx(-0.5);
                         }
-                        if (prev.py > 0.5) {
-                            prev.py = 0.5;
-                        } else if (prev.py < -0.5) {
-                            prev.py = -0.5;
+                        if (prev.getPy() > 0.5) {
+                            prev.setPy(0.5);
+                        } else if (prev.getPy() < -0.5) {
+                            prev.setPy(-0.5);
                         }
-                        if (prev.pz > 0.5) {
-                            prev.pz = 0.5;
-                        } else if (prev.pz < -0.5) {
-                            prev.pz = -0.5;
+                        if (prev.getPz() > 0.5) {
+                            prev.setPz(0.5);
+                        } else if (prev.getPz() < -0.5) {
+                            prev.setPz(-0.5);
                         }
 
                         // TAIL
@@ -297,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
 
                         lv.invalidate();
 
-                        Log.v("LOG-NOTE", p.toString() + " time: " + p.timeStamp + " position: " + p.px + ", " + p.py + ", " + p.pz);
+                        Log.v("LOG-NOTE", p.toString() + " time: " + p.getTimeStamp() + " position: " + p.getPx() + ", " + p.getPy() + ", " + p.getPz());
                     }
                 });
                 try {
@@ -305,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                i++;
+                counter++;
             }
 
             //FIXME remove
@@ -314,7 +331,142 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    class PostTrace extends AsyncTask<Void, Void, Void>{
+        @Override
+        protected Void doInBackground(Void... uri) {
+            try {
+                URL url = new URL("site.html");
+                HttpURLConnection urlConnection = new HttpURLConnection(url) {
+                    @Override
+                    public void connect() throws IOException {
+                        this.setRequestProperty("Content-Type", "application/json");
+                        this.setRequestProperty("Accept", "*/*");
+                        this.setRequestMethod("POST");
+                        OutputStream outputStream = this.getOutputStream();
+                        //serialize pointTrace array to string
+                        outputStream.write(getJSON(pointTrace).getBytes("UTF-8"));
+                    }
+                    @Override
+                    public void disconnect() {
+                    }
+
+                    @Override
+                    public boolean usingProxy() {
+                        return false;
+                    }
+                };
+                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                in.close();
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+            return null;
+        }
+        @Override
+        protected void onPostExecute(Void result) {
+        }
+    }
+
+    //middle one is for onprogressupdate
+    class GetTraces extends AsyncTask<String, String, String>{
+        @Override
+        protected String doInBackground(String... uri) {
+            try {
+                URL url = new URL("site.html");
+                HttpURLConnection urlConnection = new HttpURLConnection(url) {
+                    @Override
+                    public void connect() throws IOException {
+                        this.setRequestProperty("Accept", "*/*");
+                        this.setRequestMethod("GET");
+                    }
+                    @Override
+                    public void disconnect() {
+                    }
+
+                    @Override
+                    public boolean usingProxy() {
+                        return false;
+                    }
+                };
+                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                return inputStreamString(in, "UTF-8");
+            }
+            catch (Exception e){
+                e.printStackTrace();
+            }
+            return "failed";
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            if (result.equals("failed")){
+                //inform user of failure
+            }
+            else{
+                //deserialize
+                try {
+                    JSONObject downloads = new JSONObject(result);
+                    ObjectMapper mapper = new ObjectMapper();
+                    for (int i =0; i < downloads.length(); i++){
+                        //get the i'th pointTrace JSON
+                        JSONObject download = downloads.getJSONObject(String.valueOf(i));
+                        String jsonInString = download.toString();
+                        Point[] trace = mapper.readValue(jsonInString, Point[].class);
+                        //row,col
+                        for (int col = 0; col < 1000; col ++){
+                            traceArray[i][col] = trace[col];
+                        }
+                    }
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     // TODO - Click event listener to handle button clicks
 
-
+    //clear trace
+    public void clearTrace() {
+        Arrays.fill(pointTrace, null);
+    }
+    //send trace to server
+    public void uploadTrace() {
+        new PostTrace().execute();
+    }
+    //download user's traces from server
+    public void downloadTraces(){
+        new GetTraces().execute();
+    }
+    //return a point trace from a trace array, by row
+    public Point[] getTraceByRow(Point[][] array, int row){
+        Point[] trace = new Point[1000];
+        for (int i = 0; i < 1000; i++){
+            trace[i] = array[row][i];
+        }
+        return trace;
+    }
+    //convert array to JSON String
+    public String getJSON(Point[] array){
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writeValueAsString(array);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return "Converting Array to String failed";
+    }
+    //convert input stream to string, with given encoding
+    public String inputStreamString(InputStream inputStream, String encoding) {
+        StringWriter writer = new StringWriter();
+        try {
+            IOUtils.copy(inputStream, writer, encoding);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return writer.toString();
+    }
 }
