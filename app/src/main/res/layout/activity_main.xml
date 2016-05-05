@@ -38,7 +38,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Hi"
+                        android:text="Legume is an interactive android application written for use with the lightblue bean micro controller, which allows the user to track the movement of the bean by displaying a corresponding change in the user interface."
                         android:id="@+id/textView" />
                 </LinearLayout>
 

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 
 public class LegumeView extends View {
     ArrayList<Point> points;
-    public static int SIZE = 20;
+    public static int SIZE = 10;
 
     public LegumeView(Context context) {
         super(context);
@@ -45,12 +45,14 @@ public class LegumeView extends View {
         paint.setColor(Color.rgb(0, 255, 0)); // FIXME - ADJUST TO ACCEL DATA
 
         double percent;
-        for (Point p : points) {
+        for (int i = 0; i < points.size(); i++) {
+            Point p = points.get(i);
             percent = (double) Math.abs(p.cz) / MainActivity.getLegumeViewWidth();
             Log.v("LOG-PERCENT", p.cz + ", " + percent);
-            int val = (int) (255 * percent);
-            paint.setColor(Color.rgb(val, 255, val));
-            canvas.drawCircle(p.cx, p.cy, 50 /* p.cz / 4 */, paint);
+            int vala = (int) (255 * percent);
+            int valb = (int) ((i/SIZE)*255);
+            paint.setColor(Color.rgb(valb, 255, valb));
+            canvas.drawCircle(p.cx, p.cy, i * 5 + 50 /* p.cz / 4 */, paint);
         }
     }
 }
