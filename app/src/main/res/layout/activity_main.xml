@@ -38,16 +38,32 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Legume is an interactive android application written for use with the lightblue bean micro controller, which allows the user to track the movement of the bean by displaying a corresponding change in the user interface."
-                        android:id="@+id/textView" />
+                        android:text="Legume is an interactive android application written for use with the light blue bean micro controller, which allows the user to track the movement of the bean by displaying a corresponding change in the user interface."
+                        android:id="@+id/general"
+                        android:textStyle="bold"
+                        android:textSize="15dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="\n\nInstructions\n"
+                        android:id="@+id/instructionsTitle"
+                        android:textStyle="bold"
+                        android:textSize="15dp"/>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="- Place the bean on a flat surface with the battery facing up and away from you.\n\n- Once the app is ready to start, pick up the bean and keep it level.\n\n- To move the drawing on the screen, tilt the bean in the specific axis that you want to move.\n\n- The Y-Axis is left to right, and the X-Axis is top to bottom.\n\n- Make sure not to rotate the bean, or drastically move your hand, because the drawing won't move how you want."
+                        android:id="@+id/instructionsBody" />
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/Game"
+                    android:id="@+id/Sandbox"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:weightSum="7">
+                    android:weightSum="9">
 
                     <edu.unc.muttaqee.legume.LegumeView
                         android:id="@+id/canvas"
@@ -78,6 +94,70 @@
                             android:onClick="stopMovement"
                             android:layout_weight="1"/>
                     </LinearLayout>
+
+                    <TableLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="2">
+
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:weightSum="5">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:text="Red"
+                                android:id="@+id/redText"
+                                android:layout_weight="2"/>
+
+                            <SeekBar
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/seekBarRed"
+                                android:layout_weight="3"/>
+                        </TableRow>
+
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:weightSum="5">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:text="Blue"
+                                android:id="@+id/blueText"
+                                android:layout_weight="2"/>
+
+                            <SeekBar
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/seekBarBlue"
+                                android:layout_weight="3"/>
+                        </TableRow>
+
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:weightSum="5">
+
+                            <TextView
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:text="Green"
+                                android:id="@+id/greenText"
+                                android:layout_weight="2"/>
+
+                            <SeekBar
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/seekBarGreen"
+                                android:layout_weight="3"/>
+                        </TableRow>
+                    </TableLayout>
+
                 </LinearLayout>
 
             </FrameLayout>

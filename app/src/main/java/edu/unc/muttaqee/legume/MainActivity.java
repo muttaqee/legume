@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.SeekBar;
 import android.widget.TabHost;
 import android.widget.Toast;
 
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     static LegumeView lv;
     boolean running = false;
     Button start, stop;
+    SeekBar red, blue, green;
 
     Bean bean;
 
@@ -62,11 +64,14 @@ public class MainActivity extends AppCompatActivity {
         host.addTab(spec);
 
         //Tab 2
-        spec = host.newTabSpec("Game");
-        spec.setContent(R.id.Game);
-        spec.setIndicator("Game");
+        spec = host.newTabSpec("Sandbox");
+        spec.setContent(R.id.Sandbox);
+        spec.setIndicator("Sandbox");
         host.addTab(spec);
 
+        red = (SeekBar) findViewById(R.id.seekBarRed);
+        blue = (SeekBar) findViewById(R.id.seekBarBlue);
+        green = (SeekBar) findViewById(R.id.seekBarGreen);
     }
 
     public static int getLegumeViewWidth() {
@@ -361,6 +366,10 @@ public class MainActivity extends AppCompatActivity {
                         if (lv.points.size() > 10) {
                             lv.points.remove(0);
                         }
+
+                        lv.setRed(red.getProgress());
+                        lv.setBlue(blue.getProgress());
+                        lv.setGreen(green.getProgress());
 
                         lv.invalidate();
 
