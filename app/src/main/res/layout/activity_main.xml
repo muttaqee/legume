@@ -54,7 +54,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="- Place the bean on a flat surface with the battery facing up and away from you.\n\n- Once the app is ready to start, pick up the bean and keep it level.\n\n- To move the drawing on the screen, tilt the bean in the specific axis that you want to move.\n\n- The Y-Axis is left to right, and the X-Axis is top to bottom.\n\n- Make sure not to rotate the bean, or drastically move your hand, because the drawing won't move how you want."
+                        android:text="- Place the bean on a flat surface with the battery facing up and away from you.\n\n- Once the app is ready to start, pick up the bean and keep it level.\n\n- To move the drawing on the screen, tilt the bean in the directions of the axis that you want to move.\n\n- The X-Axis is left to right, and the Y-Axis is top to bottom.\n\n- Make sure to only tilt the bean and not to yaw it."
                         android:id="@+id/instructionsBody" />
                 </LinearLayout>
 
